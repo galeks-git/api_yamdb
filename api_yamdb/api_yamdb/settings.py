@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'review.apps.ReviewConfig',
     'api.apps.ApiConfig',
     'djoser',
+    # local
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -126,3 +128,6 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+# User model
+
+AUTH_USER_MODEL = 'users.User'

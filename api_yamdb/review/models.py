@@ -6,10 +6,16 @@ User = get_user_model()
 
 class Category(models.Model):
     """Класс Категорий"""
-    name = models.CharField(max_length=100,
-                            verbose_name='Название Категории')
-    slug = models.SlugField(verbose_name='Slug',
-                            unique=True)
+    name = models.CharField(
+                            max_length=256,
+                            verbose_name='Название Категории'
+                            )
+
+    slug = models.SlugField(
+                            max_length=75,
+                            verbose_name='Slug',
+                            unique=True
+                            )
     
     def __str__(self):
         return self.name
@@ -18,11 +24,12 @@ class Category(models.Model):
 class Genre(models.Model):
     """Модель Жанров"""
     name = models.CharField(
-        max_length=75,
+        max_length=256,
         verbose_name='Название жанра',
         db_index=True
     )
     slug = models.SlugField(
+        max_length=50
         verbose_name='Slug',
         unique=True)
     

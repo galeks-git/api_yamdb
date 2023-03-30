@@ -29,7 +29,7 @@ class Genre(models.Model):
         db_index=True
     )
     slug = models.SlugField(
-        max_length=50
+        max_length=50,
         verbose_name='Slug',
         unique=True)
     

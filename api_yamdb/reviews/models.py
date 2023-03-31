@@ -12,7 +12,7 @@ class Category(models.Model):
                             )
 
     slug = models.SlugField(
-                            max_length=75,
+                            max_length=50,
                             verbose_name='Slug',
                             unique=True
                             )

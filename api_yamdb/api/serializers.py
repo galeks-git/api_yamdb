@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from titles.models import Title, Review
+from reviews.models import Title, Review
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -8,7 +8,6 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = '__all__'
-
 
 
 class ReviewSerializer(serializers.ModelSerializer):

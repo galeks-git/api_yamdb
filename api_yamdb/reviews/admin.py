@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from titles.models import Title, Review
+from reviews.models import Title, Review
 # from .models import Comment, Group, Post
 
 

@@ -29,7 +29,7 @@ urlpatterns = [
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
-    path('', include('titles.urls')),
+    # path('', include('reviews.urls')),
     path('api/', include('api.urls')),
 ]
 

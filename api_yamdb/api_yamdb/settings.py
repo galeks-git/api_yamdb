@@ -22,12 +22,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # local
-    'users.apps.UsersConfig',
     'rest_framework',
-    'titles.apps.TitlesConfig',
+    'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
     'djoser',
+    # local
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -110,7 +110,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 # User model
-
 AUTH_USER_MODEL = 'users.User'
 
 # DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

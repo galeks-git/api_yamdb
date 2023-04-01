@@ -13,7 +13,7 @@ class TitleAdmin(admin.ModelAdmin):
 class ReviewAdmin(admin.ModelAdmin):
     list_display = (
         'pk', 'author', 'title',
-        'text', 'score', 'created',
+        'text', 'score', 'pub_date',
     )
     search_fields = ('author', 'title',)
     list_filter = ('author', 'title',)
@@ -23,7 +23,7 @@ class ReviewAdmin(admin.ModelAdmin):
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
         'pk', 'author', 'review',
-        'text', 'created',
+        'text', 'pub_date',
     )
     search_fields = ('author', 'review',)
     list_filter = ('author', 'review',)

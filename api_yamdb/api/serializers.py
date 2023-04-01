@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from reviews.models import Title, Review
+from reviews.models import Title, Review, Comment
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -19,3 +19,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+        read_only_fields = ('title', 'review',)

@@ -69,3 +69,19 @@ class Review(models.Model):
         'Дата добавления', auto_now_add=True, db_index=True
     )
     score = models.IntegerField()
+
+
+class Comment(models.Model):
+    """Модель комментарии к отзывам"""
+
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='comments'
+    )
+    review = models.ForeignKey(
+        Review, on_delete=models.CASCADE, related_name='comments'
+    )
+    text = models.TextField()
+    created = models.DateTimeField(
+        'Дата добавления', auto_now_add=True, db_index=True
+    )
+    # score = models.IntegerField()

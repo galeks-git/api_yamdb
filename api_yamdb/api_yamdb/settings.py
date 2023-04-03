@@ -1,6 +1,7 @@
+import os
 from pathlib import Path
-
 from datetime import timedelta
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,11 +24,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'reviews.apps.ReviewsConfig',
-    'api.apps.ApiConfig',
     'djoser',
     # local
+    'api.apps.ApiConfig',
+    'reviews.apps.ReviewsConfig',
     'users.apps.UsersConfig',
+    # my
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -125,9 +128,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    # 'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 5,
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=100),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')

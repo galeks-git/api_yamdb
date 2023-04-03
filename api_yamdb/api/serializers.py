@@ -17,7 +17,11 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def get_rating(self, obj):
         rat = obj.reviews.all().aggregate(Avg('score'))['score__avg']
-        return round(rat)
+        if rat is not None:
+            return round(rat)
+        else:
+            # raise serializers.Error('No reviews for calc rating')
+            return 'No reviews for calc rating'
 
     def __str__(self):
         return self.name
@@ -32,6 +36,16 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
+
+    def validate_score(self, value):
+        if value < 1 or value > 10:
+            raise serializers.ValidationError('Score must between 1 and 10')
+        return value
+
+    def validate_author(self, value):
+        if value == self.context['request'].user:
+            raise serializers.ValidationError('You can not follow yourself')
+        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):

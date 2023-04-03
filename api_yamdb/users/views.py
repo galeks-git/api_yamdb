@@ -3,7 +3,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from users.models import User
 from users.permissions import IsAdminPermission
-from users.serializer import UserSerializer
+from users.serializers import UserSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

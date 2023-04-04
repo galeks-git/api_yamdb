@@ -30,7 +30,8 @@ class Genre(models.Model):
     slug = models.SlugField(
         max_length=50,
         verbose_name='Slug',
-        unique=True)
+        unique=True
+    )
 
     def __str__(self):
         return self.name

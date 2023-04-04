@@ -54,7 +54,6 @@ class GenreViewSet(viewsets.ModelViewSet):
         return super().get_permissions() 
 
 
-
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
@@ -70,6 +69,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
     # permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
+    # pagination_class = PostsPagination
 
     def get_title(self):
         return get_object_or_404(
@@ -77,10 +77,39 @@ class ReviewViewSet(viewsets.ModelViewSet):
         )
 
     def get_queryset(self):
-        return self.get_title().reviews
+        queryset = Review.objects.filter(title=self.get_title())
+        return queryset
+        # return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, title=self.get_title())
+        # serializer.save(
+        return serializer.save(
+            author=self.request.user,
+            title=serializer.validated_data['title']
+            # title=self.get_title()
+        )
+
+
+# class FollowViewSet(mixins.CreateModelMixin,
+#                     mixins.ListModelMixin,
+#                     viewsets.GenericViewSet):
+#     serializer_class = FollowSerializer
+#     permission_classes = [IsUserOrReadOnly, IsAuthenticated]
+#     filter_backends = [filters.SearchFilter, ]
+#     search_fields = (
+#         "following__username",
+#         "user__username",
+#     )
+
+#     def get_queryset(self):
+#         queryset = Follow.objects.filter(user=self.request.user)
+#         return queryset
+
+#     def perform_create(self, serializer):
+#         return serializer.save(
+#             user=self.request.user,
+#             following=serializer.validated_data['following']
+#         )
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -99,7 +128,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
 
     def get_queryset(self):
-        return self.get_review().comments
+        return self.get_review().comments.all()
         # return self.get_title().get_review().comments
 
     def perform_create(self, serializer):

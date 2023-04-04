@@ -6,10 +6,10 @@
 Зарегистрированные посетители оставляют комментарии (Comment) и ставят оценки произведениям.
 Из пользовательских оценок формируется усреднённый рейтинг произведений.
 
-## Как запустить
+## Как запустить проект:
 * Клонировать репозиторий:
 ```
-git clone
+git clone https://github.com/galeks-git/api_yamdb.git
 ```
 
 * Cоздать и активировать виртуальное окружение:
@@ -22,6 +22,7 @@ source venv/scripts/activate
 
 * Установить зависимости из файла requirements.txt:
 ```
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 

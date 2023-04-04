@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-
-from reviews.models import Title, Review
+from api.permissions import IsAdmin
+from rest_framework import viewsets, filters 
+from rest_framework.permissions import AllowAny
+from reviews.models import Title, Review, Genre, Category
 from api.serializers import (
-    TitleSerializer, ReviewSerializer, CommentSerializer
+    TitleSerializer, ReviewSerializer, CommentSerializer,
+    CategorySerializer, GenreSerializer
 )
 
 # from rest_framework import filters
@@ -12,7 +14,7 @@ from rest_framework.permissions import (
     IsAuthenticated, IsAuthenticatedOrReadOnly
 )
 
-from api.permissions import IsAuthorOrReadOnly
+from api.permissions import IsAuthorOrReadOnly, IsAdmin
 # from api.permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from api.pagination import PostsPagination
 
@@ -20,6 +22,37 @@ from api.pagination import PostsPagination
 # class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 #     queryset = Group.objects.all()
 #     serializer_class = GroupSerializer
+
+
+from api.permissions import IsAdmin
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    quryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdmin, )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+
+    def get_permissions(self):
+    # Если в GET-запросе требуется получить информацию об объекте
+        if self.action == 'retrieve':
+        # Вернем обновленный перечень используемых пермишенов
+            return (AllowAny,)
+    # Для остальных ситуаций оставим текущий перечень пермишенов без изменений
+        return super().get_permissions() 
+
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdmin,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            return (AllowAny,)
+        return super().get_permissions() 
+
 
 
 class TitleViewSet(viewsets.ModelViewSet):

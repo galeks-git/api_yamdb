@@ -14,7 +14,10 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
 )
 
-from api.permissions import IsAuthorOrReadOnly, IsAdminOrReadOnly
+from api.permissions import (IsAuthorOrReadOnly,
+                             IsAdminOrReadOnly,
+                             IsAuthorAdminModeratorOrReadOnly,
+                             )
 # from api.permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from api.pagination import PostsPagination
 
@@ -68,7 +71,11 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+        IsAuthorAdminModeratorOrReadOnly,
+    )
     # permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
 
     def get_title(self):
@@ -85,7 +92,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
+    permission_classes = (
+        IsAuthenticatedOrReadOnly,
+        IsAuthorAdminModeratorOrReadOnly,
+    )
     # permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
 
     # def get_title(self):

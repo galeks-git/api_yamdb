@@ -8,7 +8,7 @@ class GenreSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Genre
-        fields = '__all__'
+        fields = ('name', 'slug')
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -18,27 +18,36 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('name', 'slug')
 
 
-class TitleSerializer(serializers.ModelSerializer):
-    rating = serializers.SerializerMethodField()
+class TitleGETSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов класса Title при GET запросах."""
+
+    rating = serializers.IntegerField()
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
 
     class Meta:
         model = Title
-        # fields = '__all__'
         fields = (
-            'id', 'name', 'year', 'rating',
-            'description', 'genre', 'category',
+            'id',
+            'name',
+            'year',
+            'rating',
+            'description',
+            'genre',
+            'category'
         )
 
-    def get_rating(self, obj):
-        rat = obj.reviews.all().aggregate(Avg('score'))['score__avg']
-        if rat is not None:
-            return round(rat)
-        else:
-            # raise serializers.Error('No reviews for calc rating')
-            return 'No reviews for calc rating'
 
-    def __str__(self):
-        return self.name
+class TitleChangeSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов класса Title при небезопасных запросах."""
+
+    genre = serializers.SlugRelatedField(slug_field='slug',queryset=Genre.objects.all())
+
+    category = serializers.SlugRelatedField(slug_field='slug',queryset=Category.objects.all())
+
+    class Meta:
+        model = Title
+        fields = '__all__'
 
 
 class ReviewSerializer(serializers.ModelSerializer):

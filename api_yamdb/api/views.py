@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, filters
+from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import AllowAny
 from reviews.models import Title, Review, Genre, Category
 from api.serializers import (
@@ -27,21 +27,16 @@ from api.pagination import PostsPagination
 #     serializer_class = GroupSerializer
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
-    quryset = Category.objects.all()
+class CategoryViewSet(mixins.ListModelMixin,
+                      mixins.CreateModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
+    queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # permission_classes = (IsAdmin, )
-    permission_classes = (IsAdminOrReadOnly, )
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
-
-    def get_permissions(self):
-        # Если в GET-запросе требуется получить информацию об объекте
-        if self.action == 'retrieve':
-            # Вернем обновленный перечень используемых пермишенов
-            return (AllowAny,)
-    # Для остальных ситуаций оставим текущий перечень пермишенов без изменений
-        return super().get_permissions()
+    lookup_field = 'slug'
 
 
 class GenreViewSet(viewsets.ModelViewSet):

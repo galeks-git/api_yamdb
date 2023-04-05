@@ -11,8 +11,25 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
             return True
         return obj.author == request.user
 
-class IsAdmin(permissions.BasePermission):
+
+# class IsAdmin(permissions.BasePermission):
+class IsAdminOrReadOnly(permissions.BasePermission):
     """SuperUser django и Админ могут делать CREATE PATCH DELETE запросы """
 
     def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
         return request.user.is_authenticated and request.user.is_admin
+
+
+class IsAuthorAdminModeratorOrReadOnly(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.user.is_authenticated:
+            if request.method == 'POST':
+                return True
+            return (request.user == obj.author
+                    or request.user.is_moderator
+                    or request.user.is_admin)

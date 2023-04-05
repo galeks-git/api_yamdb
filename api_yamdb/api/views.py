@@ -1,30 +1,22 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters
-from rest_framework.permissions import AllowAny
-from reviews.models import Title, Review, Genre, Category
+from rest_framework.serializers import ValidationError
+from rest_framework.permissions import (
+    # IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+    AllowAny,
+)
+
+from api.permissions import (
+    IsAuthorOrReadOnly, IsAdminOrReadOnly,
+    IsAuthorAdminModeratorOrReadOnly,
+)
 from api.serializers import (
     TitleSerializer, ReviewSerializer, CommentSerializer,
     CategorySerializer, GenreSerializer
 )
-
-# from rest_framework import filters
-# from rest_framework import mixins
-from rest_framework.permissions import (
-    # IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
-
-from api.permissions import (IsAuthorOrReadOnly,
-                             IsAdminOrReadOnly,
-                             IsAuthorAdminModeratorOrReadOnly,
-                             )
-# from api.permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
 from api.pagination import PostsPagination
-
-
-# class GroupViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = Group.objects.all()
-#     serializer_class = GroupSerializer
+from reviews.models import Title, Review, Genre, Category
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -57,6 +49,7 @@ class GenreViewSet(viewsets.ModelViewSet):
             return (AllowAny,)
         return super().get_permissions()
 
+
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
@@ -70,13 +63,11 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    # permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
     permission_classes = (
         IsAuthenticatedOrReadOnly,
         IsAuthorAdminModeratorOrReadOnly,
     )
-    # permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
-    # pagination_class = PostsPagination
+    pagination_class = PostsPagination
 
     def get_title(self):
         return get_object_or_404(
@@ -89,34 +80,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
-        # serializer.save(
-        return serializer.save(
-            author=self.request.user,
-            title=serializer.validated_data['title']
-            # title=self.get_title()
-        )
-
-
-# class FollowViewSet(mixins.CreateModelMixin,
-#                     mixins.ListModelMixin,
-#                     viewsets.GenericViewSet):
-#     serializer_class = FollowSerializer
-#     permission_classes = [IsUserOrReadOnly, IsAuthenticated]
-#     filter_backends = [filters.SearchFilter, ]
-#     search_fields = (
-#         "following__username",
-#         "user__username",
-#     )
-
-#     def get_queryset(self):
-#         queryset = Follow.objects.filter(user=self.request.user)
-#         return queryset
-
-#     def perform_create(self, serializer):
-#         return serializer.save(
-#             user=self.request.user,
-#             following=serializer.validated_data['following']
-#         )
+        if not Review.objects.filter(author=self.request.user).exists():
+            return serializer.save(
+                author=self.request.user,
+                title=self.get_title()
+            )
+        else:
+            raise ValidationError('You can make review only one time')
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -126,12 +96,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         IsAuthenticatedOrReadOnly,
         IsAuthorAdminModeratorOrReadOnly,
     )
-    # permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
-
-    # def get_title(self):
-    #     return get_object_or_404(
-    #         Title, pk=self.kwargs.get('title_id')
-    #     )
+    pagination_class = PostsPagination
 
     def get_review(self):
         return get_object_or_404(

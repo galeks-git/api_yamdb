@@ -2,10 +2,11 @@ from rest_framework import serializers
 from django.db.models import Avg
 
 from reviews.models import Title, Review, Comment, Genre, Category
+from users.models import User
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = Genre
         fields = '__all__'
@@ -52,13 +53,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('title',)
 
     def validate_score(self, value):
-        if value < 1 or value > 10:
+        # if value < 1 or value > 10:
+        if not (0 < value < 11):
             raise serializers.ValidationError('Score must between 1 and 10')
-        return value
-
-    def validate_author(self, value):
-        if value == self.context['request'].user:
-            raise serializers.ValidationError('You can not follow yourself')
         return value
 
 

@@ -33,7 +33,6 @@ class GenreViewSet(CategoryANDGenreViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет для создания обьектов класса Title."""
 
     queryset = Title.objects.all().annotate(Avg("reviews__score")).order_by("name")
     serializer_class = TitleChangeSerializer
@@ -41,8 +40,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     def get_serializer_class(self):
-        """Определяет какой сериализатор будет использоваться
-        для разных типов запроса."""
         if self.request.method == 'GET':
             return TitleGETSerializer
         return TitleChangeSerializer

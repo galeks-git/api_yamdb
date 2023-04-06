@@ -19,7 +19,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class TitleGETSerializer(serializers.ModelSerializer):
-    """Сериализатор объектов класса Title при GET запросах."""
+    """ Сериализатор для GET запросов"""
 
     rating = serializers.IntegerField()
     genre = GenreSerializer(many=True)
@@ -39,11 +39,11 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
 
 class TitleChangeSerializer(serializers.ModelSerializer):
-    """Сериализатор объектов класса Title при небезопасных запросах."""
+    """Сериализатор при небезопасных запросах."""
 
     genre = serializers.SlugRelatedField(slug_field='slug',queryset=Genre.objects.all())
 
-    category = serializers.SlugRelatedField(slug_field='slug',queryset=Category.objects.all())
+    category = serializers.SlugRelatedField(slug_field='slug',queryset=Category.objects.all()) 
 
     class Meta:
         model = Title

@@ -46,9 +46,11 @@ class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField(verbose_name='Год написания')
     description = models.TextField(blank=True)
-    genre = models.ForeignKey(
-        Genre, on_delete=models.SET_NULL,
-        related_name='titles', blank=True, null=True
+    genre = models.ManyToManyField(
+        Genre,
+        through='GenreTitle',
+        related_name='titles',
+        verbose_name='жанр'
     )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
@@ -88,3 +90,20 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True
     )
+
+
+class GenreTitle(models.Model):
+
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        verbose_name='Жанр'
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='произведение'
+    )
+
+    def __str__(self):
+        return f'{self.title} принадлежит жанру {self.genre} '

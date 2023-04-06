@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
+from django_filters.rest_framework import FilterSet, CharFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.serializers import ValidationError
 from rest_framework import viewsets
@@ -34,16 +35,27 @@ class GenreViewSet(CategoryANDGenreViewSet):
     serializer_class = GenreSerializer
 
 
+class TitleFilter(FilterSet):
+    category = CharFilter(field_name='category__slug')
+    genre = CharFilter(field_name='genre__slug')
+
+    class Meta:
+        model = Title
+        fields = ['name', 'year', 'category', 'genre']
+        
+
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(Avg("reviews__score")).order_by("name")
     serializer_class = TitleChangeSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleGETSerializer
         return TitleChangeSerializer
+
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

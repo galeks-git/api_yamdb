@@ -43,12 +43,12 @@ class TitleFilter(FilterSet):
     class Meta:
         model = Title
         fields = ['name', 'year', 'category', 'genre']
-        
+
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(Avg("reviews__score")).order_by("name")
     serializer_class = TitleChangeSerializer
-    # permission_classes = (IsAdminOrReadOnly, IsAuthorAdminModeratorOrReadOnly,)
+    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
 
@@ -62,7 +62,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
         IsAuthenticatedOrReadOnly,
-        # IsAuthorAdminModeratorOrReadOnly,
+        IsAuthorAdminModeratorOrReadOnly,
     )
     pagination_class = LimitOffsetPagination
 

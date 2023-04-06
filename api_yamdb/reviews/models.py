@@ -119,5 +119,10 @@ class GenreTitle(models.Model):
         verbose_name='произведение'
     )
 
+    class Meta:
+        verbose_name = 'Соответствие жанра и произведения'
+        verbose_name_plural = 'Таблица соответствия жанров и произведений'
+        ordering = ('id',)
+        
     def __str__(self):
         return f'{self.title} принадлежит жанру {self.genre} '

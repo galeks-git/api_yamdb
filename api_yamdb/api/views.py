@@ -50,8 +50,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     serializer_class = TitleChangeSerializer
     # permission_classes = (IsAdminOrReadOnly, IsAuthorAdminModeratorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
+    permission_classes = (IsAdminOrReadOnly,)
     filterset_class = TitleFilter
-
+     
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return TitleGETSerializer

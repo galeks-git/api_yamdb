@@ -6,7 +6,8 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    """Класс Категорий"""
+    """Модель Категорий."""
+
     name = models.CharField(
         max_length=256,
         verbose_name='Название Категории'
@@ -25,7 +26,8 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    """Модель Жанров"""
+    """Модель Жанров."""
+
     name = models.CharField(
         max_length=256,
         verbose_name='Название жанра',
@@ -37,19 +39,24 @@ class Genre(models.Model):
         unique=True
     )
 
+    class Meta:
+        ordering = ('name',)
+
     def __str__(self):
         return self.name
 
 
 class Title(models.Model):
-    """Модель произведений"""
+    """Модель произведений."""
 
     name = models.CharField(max_length=256)
     year = models.IntegerField(verbose_name='Год написания')
     description = models.TextField(blank=True)
-    genre = models.ForeignKey(
-        Genre, on_delete=models.SET_NULL,
-        related_name='titles', blank=True, null=True
+    genre = models.ManyToManyField(
+        Genre,
+        through='GenreTitle',
+        related_name='titles',
+        verbose_name='жанр'
     )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL,
@@ -61,7 +68,7 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    """Модель отзывов"""
+    """Модель отзывов."""
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='reviews'
@@ -85,7 +92,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
-    """Модель комментарии к отзывам"""
+    """Модель комментарии к отзывам."""
 
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments'
@@ -97,3 +104,20 @@ class Comment(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True
     )
+
+
+class GenreTitle(models.Model):
+
+    genre = models.ForeignKey(
+        Genre,
+        on_delete=models.CASCADE,
+        verbose_name='Жанр'
+    )
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name='произведение'
+    )
+
+    def __str__(self):
+        return f'{self.title} принадлежит жанру {self.genre} '

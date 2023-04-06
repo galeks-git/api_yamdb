@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.db.models import Avg
 
 from reviews.models import Title, Review, Comment, Genre, Category
-from users.models import User
+# from users.models import User
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -22,7 +22,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class TitleGETSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET запросов"""
 
-    rating = serializers.IntegerField()
+    # rating = serializers.IntegerField()
+    rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 
@@ -38,13 +39,26 @@ class TitleGETSerializer(serializers.ModelSerializer):
             'category'
         )
 
+    def get_rating(self, obj):
+        rat = obj.reviews.all().aggregate(Avg('score'))['score__avg']
+        if rat is not None:
+            return round(rat)
+        else:
+            # raise serializers.Error('No reviews for calc rating')
+            return 'No reviews for calc rating'
+
+    def __str__(self):
+        return self.name
+
 
 class TitleChangeSerializer(serializers.ModelSerializer):
     """Сериализатор при небезопасных запросах."""
-
-    genre = serializers.SlugRelatedField(slug_field='slug',queryset=Genre.objects.all())
-
-    category = serializers.SlugRelatedField(slug_field='slug',queryset=Category.objects.all()) 
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Genre.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Category.objects.all()
+    )
 
     class Meta:
         model = Title

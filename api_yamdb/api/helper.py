@@ -1,10 +1,13 @@
 from rest_framework import filters, mixins, viewsets
-from .permissions import IsAdminOrReadOnly
+from api.permissions import IsAdminOrReadOnly
 
-class CategoryANDGenreViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+
+class CategoryANDGenreViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
     """Родительский класс для GenreViewset и CategoryViewSet"""
 
     permission_classes = (IsAdminOrReadOnly,)

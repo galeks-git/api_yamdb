@@ -24,6 +24,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
     # rating = serializers.IntegerField()
     rating = serializers.SerializerMethodField()
+    # genre = GenreSerializer(many=False, read_only=True)
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
 

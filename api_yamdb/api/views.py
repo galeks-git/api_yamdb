@@ -48,7 +48,7 @@ class TitleFilter(FilterSet):
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all().annotate(Avg("reviews__score")).order_by("name")
     serializer_class = TitleChangeSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    # permission_classes = (IsAdminOrReadOnly, IsAuthorAdminModeratorOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
 
@@ -63,7 +63,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (
         IsAuthenticatedOrReadOnly,
-        IsAuthorAdminModeratorOrReadOnly,
+        # IsAuthorAdminModeratorOrReadOnly,
     )
     pagination_class = LimitOffsetPagination
 
@@ -77,8 +77,15 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return queryset
         # return self.get_title().reviews.all()
 
+    # def perform_create(self, serializer):
+    #     return serializer.save(
+    #         author=self.request.user,
+    #         title=self.get_title()
+    #     )
     def perform_create(self, serializer):
-        if not Review.objects.filter(author=self.request.user).exists():
+        if not Review.objects.filter(
+            title=self.get_title(), author=self.request.user
+        ).exists():
             return serializer.save(
                 author=self.request.user,
                 title=self.get_title()

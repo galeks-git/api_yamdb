@@ -24,6 +24,10 @@ class TitleGETSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET запросов"""
  
     # rating = serializers.IntegerField()
+#    rating = serializers.SerializerMethodField()
+#    # genre = GenreSerializer(many=False, read_only=True)
+#    genre = GenreSerializer(many=True)
+#    category = CategorySerializer()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
     rating = IntegerField(read_only=True)

@@ -23,14 +23,10 @@ class CategorySerializer(serializers.ModelSerializer):
 class TitleGETSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET запросов"""
  
-    # rating = serializers.IntegerField()
-#    rating = serializers.SerializerMethodField()
-#    # genre = GenreSerializer(many=False, read_only=True)
-#    genre = GenreSerializer(many=True)
-#    category = CategorySerializer()
+    rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
-    rating = IntegerField(read_only=True)
+    # rating = IntegerField(read_only=True)
 
     class Meta:
         model = Title
@@ -50,7 +46,8 @@ class TitleGETSerializer(serializers.ModelSerializer):
             return round(rat)
         else:
             # raise serializers.Error('No reviews for calc rating')
-            return 'No reviews for calc rating'
+            # return 'No reviews for calc rating'
+            return None
 
 
 class TitleChangeSerializer(serializers.ModelSerializer):

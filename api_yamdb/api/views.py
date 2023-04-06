@@ -58,7 +58,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleChangeSerializer
 
 
-
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (

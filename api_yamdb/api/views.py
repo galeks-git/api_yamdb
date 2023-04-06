@@ -1,27 +1,28 @@
-from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 from django_filters.rest_framework import FilterSet, CharFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.serializers import ValidationError
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
+from rest_framework.pagination import LimitOffsetPagination
 # from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import (
     # IsAuthenticated,
     IsAuthenticatedOrReadOnly,
     # AllowAny,
 )
+from rest_framework.serializers import ValidationError
 
-from reviews.models import Title, Review, Genre, Category
-from api.pagination import PostsPagination
 from api.helper import CategoryANDGenreViewSet
+# from api.pagination import PostsPagination
 from api.permissions import (
     # IsAuthorOrReadOnly,
     IsAdminOrReadOnly,
     IsAuthorAdminModeratorOrReadOnly,
 )
+from reviews.models import Category, Genre, Review, Title
 from api.serializers import (
-    TitleChangeSerializer, ReviewSerializer, CommentSerializer,
-    CategorySerializer, GenreSerializer, TitleGETSerializer
+    CategorySerializer, CommentSerializer, GenreSerializer,
+    ReviewSerializer, TitleChangeSerializer, TitleGETSerializer
 )
 
 
@@ -64,7 +65,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         IsAuthenticatedOrReadOnly,
         IsAuthorAdminModeratorOrReadOnly,
     )
-    pagination_class = PostsPagination
+    pagination_class = LimitOffsetPagination
 
     def get_title(self):
         return get_object_or_404(
@@ -93,7 +94,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         IsAuthenticatedOrReadOnly,
         IsAuthorAdminModeratorOrReadOnly,
     )
-    pagination_class = PostsPagination
+    pagination_class = LimitOffsetPagination
 
     def get_review(self):
         return get_object_or_404(

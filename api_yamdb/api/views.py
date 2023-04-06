@@ -1,4 +1,12 @@
 from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
+from django.db.models import Avg
+from django_filters.rest_framework import DjangoFilterBackend
+from reviews.models import Title, Review, Genre, Category
+from api.serializers import (
+    TitleChangeSerializer, ReviewSerializer, CommentSerializer,
+    CategorySerializer, GenreSerializer, TitleGETSerializer
+)
 from rest_framework.serializers import ValidationError
 from rest_framework import filters, mixins, viewsets
 from rest_framework.permissions import (
@@ -6,6 +14,14 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
     AllowAny,
 )
+
+from api.permissions import (IsAuthorAdminModeratorOrReadOnly,
+                             IsAdminOrReadOnly,
+                             )
+# from api.permissions import IsAuthorOrReadOnly, IsUserOrReadOnly
+from api.pagination import PostsPagination
+from .helper import CategoryANDGenreViewSet
+
 
 from reviews.models import Title, Review, Genre, Category
 from api.pagination import PostsPagination
@@ -18,43 +34,27 @@ from api.serializers import (
     CategorySerializer, GenreSerializer
 )
 
-
-class CategoryViewSet(mixins.ListModelMixin,
-                      mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      viewsets.GenericViewSet):
+class CategoryViewSet(CategoryANDGenreViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CategoryANDGenreViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    # permission_classes = (IsAdmin,)
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
-
-    def get_permissions(self):
-        if self.action == 'retrieve':
-            return (AllowAny,)
-        return super().get_permissions()
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    permission_classes = [IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly]
-    pagination_class = PostsPagination
-    # permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
 
-    # def perform_create(self, serializer):
-    #     serializer.save(author=self.request.user)
+    queryset = Title.objects.all().annotate(Avg("reviews__score")).order_by("name")
+    serializer_class = TitleChangeSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
 
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return TitleGETSerializer
+        return TitleChangeSerializer
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer

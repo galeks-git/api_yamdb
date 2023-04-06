@@ -29,8 +29,6 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'reviews.apps.ReviewsConfig',
     'users.apps.UsersConfig',
-    # my
-    'drf_yasg',
 ]
 
 MIDDLEWARE = [

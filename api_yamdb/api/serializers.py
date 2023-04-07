@@ -1,9 +1,8 @@
 from django.db.models import Avg
-from rest_framework.serializers import IntegerField
-from reviews.models import Title, Review, Comment, Genre, Category
 from rest_framework import serializers
-from reviews.models import Category, Comment, Genre, Review, Title
-# from users.models import User
+from rest_framework.serializers import IntegerField
+
+from reviews.models import Title, Review, Comment, Genre, Category
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -26,7 +25,6 @@ class TitleGETSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer()
-    # rating = IntegerField(read_only=True)
 
     class Meta:
         model = Title
@@ -45,21 +43,22 @@ class TitleGETSerializer(serializers.ModelSerializer):
         if rat is not None:
             return round(rat)
         else:
-            # raise serializers.Error('No reviews for calc rating')
-            # return 'No reviews for calc rating'
             return None
 
 
 class TitleChangeSerializer(serializers.ModelSerializer):
     """Сериализатор при небезопасных запросах."""
-    genre = serializers.SlugRelatedField(slug_field='slug', queryset=Genre.objects.all(), many=True)
-    category = serializers.SlugRelatedField(slug_field='slug', queryset=Category.objects.all())
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Genre.objects.all(), many=True
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Category.objects.all()
+    )
     year = IntegerField()
 
     class Meta:
         model = Title
         fields = '__all__'
-
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -73,7 +72,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('title',)
 
     def validate_score(self, value):
-        # if value < 1 or value > 10:
         if not (0 < value < 11):
             raise serializers.ValidationError('Score must between 1 and 10')
         return value

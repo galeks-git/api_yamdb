@@ -1,8 +1,7 @@
-from django.contrib.auth import get_user_model
 from django.db.models import UniqueConstraint
 from django.db import models
 
-User = get_user_model()
+from users.models import User
 
 
 class Category(models.Model):
@@ -123,6 +122,6 @@ class GenreTitle(models.Model):
         verbose_name = 'Соответствие жанра и произведения'
         verbose_name_plural = 'Таблица соответствия жанров и произведений'
         ordering = ('id',)
-        
+
     def __str__(self):
         return f'{self.title} принадлежит жанру {self.genre} '

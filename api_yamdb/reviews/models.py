@@ -106,7 +106,6 @@ class Review(models.Model):
             UniqueConstraint(
                 fields=["title", "author", ],
                 name='unique_review',
-                violation_error_message='You can make review only one time',
             ),
         ]
 

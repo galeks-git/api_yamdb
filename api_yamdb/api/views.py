@@ -2,7 +2,6 @@ from django.db.models import Avg
 from django_filters.rest_framework import (
     FilterSet, CharFilter, DjangoFilterBackend
 )
-from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.pagination import LimitOffsetPagination
@@ -39,7 +38,7 @@ class TitleFilter(FilterSet):
 
     class Meta:
         model = Title
-        fields = ['name', 'year', 'category', 'genre']
+        fields = ('name', 'year', 'category', 'genre')
 
 
 class TitleViewSet(viewsets.ModelViewSet):

@@ -1,18 +1,27 @@
 from django.db.models import UniqueConstraint
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 from users.models import User
+
+CATEGORY_NAME_MAX_LEN = 256
+CATEGORY_SLUG_MAX_LEN = 50
+GENRE_NAME_MAX_LEN = 256
+GENRE_SLUG_MAX_LEN = 50
+TITLE_NAME_MAX_LEN = 256
+REVIEW_SCORE_MIN = 1
+REVIEW_SCORE_MAX = 10
 
 
 class Category(models.Model):
     """Модель Категорий."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=CATEGORY_NAME_MAX_LEN,
         verbose_name='Название Категории'
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=CATEGORY_SLUG_MAX_LEN,
         verbose_name='Slug',
         unique=True
     )
@@ -28,12 +37,12 @@ class Genre(models.Model):
     """Модель Жанров."""
 
     name = models.CharField(
-        max_length=256,
+        max_length=GENRE_NAME_MAX_LEN,
         verbose_name='Название жанра',
         db_index=True
     )
     slug = models.SlugField(
-        max_length=50,
+        max_length=GENRE_SLUG_MAX_LEN,
         verbose_name='Slug',
         unique=True
     )
@@ -48,7 +57,7 @@ class Genre(models.Model):
 class Title(models.Model):
     """Модель произведений."""
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=TITLE_NAME_MAX_LEN)
     year = models.IntegerField(verbose_name='Год написания')
     description = models.TextField(blank=True)
     genre = models.ManyToManyField(
@@ -79,13 +88,25 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True
     )
-    score = models.IntegerField()
+    score = models.IntegerField(
+        validators=[
+            MinValueValidator(
+                REVIEW_SCORE_MIN,
+                message=f'score не ниже {REVIEW_SCORE_MIN}'
+            ),
+            MaxValueValidator(
+                REVIEW_SCORE_MAX,
+                message=f'score не выше {REVIEW_SCORE_MAX}'
+            ),
+        ]
+    )
 
     class Meta:
         constraints = [
             UniqueConstraint(
                 fields=["title", "author", ],
                 name='unique_review',
+                violation_error_message='You can make review only one time',
             ),
         ]
 

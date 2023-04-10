@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.serializers import IntegerField
@@ -39,11 +40,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
         )
 
     def get_rating(self, obj):
-        rat = obj.reviews.all().aggregate(Avg('score'))['score__avg']
-        if rat is not None:
-            return round(rat)
-        else:
-            return None
+        return obj.reviews.all().aggregate(Avg('score'))['score__avg']
 
 
 class TitleChangeSerializer(serializers.ModelSerializer):
@@ -60,6 +57,13 @@ class TitleChangeSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 
+    def validate_year(self, value):
+        year = datetime.now().year
+        if value > year:
+            raise serializers.ValidationError(
+                f'Year не может быть больше {year}')
+        return value
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -70,11 +74,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
-
-    def validate_score(self, value):
-        if not (0 < value < 11):
-            raise serializers.ValidationError('Score must between 1 and 10')
-        return value
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -1,4 +1,3 @@
-from datetime import datetime
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -57,13 +56,6 @@ class TitleChangeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = '__all__'
-
-    def validate_year(self, value):
-        year = datetime.now().year
-        if value > year:
-            raise serializers.ValidationError(
-                f'Year не может быть больше {year}')
-        return value
 
 
 class ReviewSerializer(serializers.ModelSerializer):

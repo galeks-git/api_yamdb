@@ -2,6 +2,7 @@ from django.db.models import UniqueConstraint
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from api.validators import validate_year
 from users.models import User
 
 CATEGORY_NAME_MAX_LEN = 256
@@ -18,12 +19,13 @@ class Category(models.Model):
 
     name = models.CharField(
         max_length=CATEGORY_NAME_MAX_LEN,
-        verbose_name='Название Категории'
+        verbose_name='Название Категории',
+        unique=True,
     )
     slug = models.SlugField(
         max_length=CATEGORY_SLUG_MAX_LEN,
         verbose_name='Slug',
-        unique=True
+        unique=True,
     )
 
     class Meta:
@@ -39,12 +41,13 @@ class Genre(models.Model):
     name = models.CharField(
         max_length=GENRE_NAME_MAX_LEN,
         verbose_name='Название жанра',
-        db_index=True
+        db_index=True,
+        unique=True,
     )
     slug = models.SlugField(
         max_length=GENRE_SLUG_MAX_LEN,
         verbose_name='Slug',
-        unique=True
+        unique=True,
     )
 
     class Meta:
@@ -58,7 +61,8 @@ class Title(models.Model):
     """Модель произведений."""
 
     name = models.CharField(max_length=TITLE_NAME_MAX_LEN)
-    year = models.IntegerField(verbose_name='Год написания')
+    year = models.IntegerField(verbose_name='Год написания',
+                               validators=(validate_year,))
     description = models.TextField(blank=True)
     genre = models.ManyToManyField(
         Genre,
@@ -104,7 +108,7 @@ class Review(models.Model):
     class Meta:
         constraints = [
             UniqueConstraint(
-                fields=["title", "author", ],
+                fields=("title", "author"),
                 name='unique_review',
             ),
         ]

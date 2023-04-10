@@ -12,12 +12,16 @@
 git clone https://github.com/galeks-git/api_yamdb.git
 ```
 
-* Cоздать и активировать виртуальное окружение:
+* Cоздать виртуальное окружение:
 ```
 python -m venv venv (Win)
 python3 -m venv venv (Linux)
+```
 
-source venv/scripts/activate
+* Активировать виртуальное окружение:
+```
+source venv/scripts/activate (Win)
+source venv/bin/activate (Linux)
 ```
 
 * Установить зависимости из файла requirements.txt:
@@ -32,7 +36,7 @@ python manage.py migrate (Win)
 python3 manage.py migrate (Linux)
 ```
 
-* Запонить Базу данных из CSV
+* Заполнить Базу данных из CSV
 ```
 python manage.py load_csv (Win)
 python3 manage.py load_csv (Linux)

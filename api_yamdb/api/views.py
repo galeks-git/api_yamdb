@@ -8,7 +8,6 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
 )
-from rest_framework.serializers import ValidationError
 
 from reviews.models import Category, Genre, Review, Title
 from api.helper import CategoryANDGenreViewSet
@@ -74,15 +73,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
-        if not Review.objects.filter(
-            title=self.get_title(), author=self.request.user
-        ).exists():
-            return serializer.save(
-                author=self.request.user,
-                title=self.get_title()
-            )
-        else:
-            raise ValidationError('You can make review only one time')
+        serializer.save(author=self.request.user, title=self.get_title())
 
 
 class CommentViewSet(viewsets.ModelViewSet):

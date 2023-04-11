@@ -1,9 +1,13 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
 
-reg_message = 'username может содержать латинские буквы, цифры, символы .+-_@'
-reg_validator = RegexValidator(r"^[\w.@+-]+", reg_message)
+from api.validators import reg_validator
+
+USER_USERNAME_MAX_LEN = 150
+USER_EMAIL_MAX_LEN = 254
+USER_ROLE_MAX_LEN = 10
+USER_CODE_MAX_LEN = 100
+USER_NAME_MAX_LEN = 150
 
 
 class User(AbstractUser):
@@ -20,13 +24,13 @@ class User(AbstractUser):
 
     username = models.CharField(
         verbose_name='Имя пользователя',
-        max_length=150,
+        max_length=USER_USERNAME_MAX_LEN,
         unique=True,
         validators=(reg_validator,)
     )
     email = models.EmailField(
         verbose_name='Электронная почта',
-        max_length=254,
+        max_length=USER_EMAIL_MAX_LEN,
         unique=True
     )
     bio = models.TextField(
@@ -38,11 +42,11 @@ class User(AbstractUser):
         verbose_name='Роль',
         choices=ROLES,
         default=USER,
-        max_length=10
+        max_length=USER_ROLE_MAX_LEN
     )
     confirmation_code = models.CharField(
         verbose_name='Код подтверждения',
-        max_length=200,
+        max_length=USER_CODE_MAX_LEN,
         editable=False,
         null=True,
         blank=True,
@@ -50,12 +54,12 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=150,
+        max_length=USER_NAME_MAX_LEN,
         blank=True,
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=150,
+        max_length=USER_NAME_MAX_LEN,
         blank=True,
     )
 

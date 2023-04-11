@@ -1,12 +1,12 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.core.validators import RegexValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from api.validators import reg_validator
 from users.models import User
 
-reg_message = 'username может содержать латинские буквы, цифры, символы .+-_@'
-reg_validator = RegexValidator(r"^[\w.@+-]+", reg_message)
+USER_USERNAME_MAX_LEN = 150
+USER_EMAIL_MAX_LEN = 254
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -20,11 +20,11 @@ class UsersSerializer(serializers.ModelSerializer):
 class SignupSerializer(serializers.Serializer):
 
     email = serializers.EmailField(
-        max_length=254,
+        max_length=USER_EMAIL_MAX_LEN,
         required=True,
     )
     username = serializers.CharField(
-        max_length=150,
+        max_length=USER_USERNAME_MAX_LEN,
         required=True,
         validators=(reg_validator,)
     )

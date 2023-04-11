@@ -1,5 +1,5 @@
-from datetime import datetime
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.serializers import IntegerField
 
@@ -57,13 +57,6 @@ class TitleChangeSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 
-    def validate_year(self, value):
-        year = datetime.now().year
-        if value > year:
-            raise serializers.ValidationError(
-                f'Year не может быть больше {year}')
-        return value
-
 
 class ReviewSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
@@ -74,6 +67,20 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = '__all__'
         read_only_fields = ('title',)
+
+    def validate(self, data):
+        if self.context["request"].method != "POST":
+            return data
+        title = get_object_or_404(
+            Title,
+            pk=self.context["view"].kwargs.get("title_id")
+        )
+        author = self.context["request"].user
+        if Review.objects.filter(title_id=title, author=author).exists():
+            raise serializers.ValidationError(
+                "You can make review only one time"
+            )
+        return data
 
 
 class CommentSerializer(serializers.ModelSerializer):

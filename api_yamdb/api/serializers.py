@@ -22,8 +22,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class TitleGETSerializer(serializers.ModelSerializer):
     """ Сериализатор для GET запросов"""
-
-    rating = serializers.SerializerMethodField()
+    rating = serializers.IntegerField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer()
 
@@ -38,10 +37,6 @@ class TitleGETSerializer(serializers.ModelSerializer):
             'genre',
             'category'
         )
-
-    def get_rating(self, obj):
-        return obj.reviews.all().aggregate(Avg('score'))['score__avg']
-
 
 class TitleChangeSerializer(serializers.ModelSerializer):
     """Сериализатор при небезопасных запросах."""
